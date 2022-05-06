@@ -24,7 +24,6 @@ std::string TMCAgent::GetNextGuess()
         // for the result code associated with each letter of the guess
         for (size_t i = 0; i < last->result.size(); i++)
         {
-
             // if (this letter was in the correct position) then
             if (last->result[i] == Colour::GREEN)
             {
@@ -44,7 +43,7 @@ std::string TMCAgent::GetNextGuess()
             }
             else if (last->result[i] == Colour::YELLOW)
             {
-                //filter out any words which don't have this letter at all
+                //filter out any words which don't have this letter in any position
                 for (WordSet::iterator iter = m_word_set.begin(); iter != m_word_set.end(); )
                 {
                     
@@ -62,23 +61,28 @@ std::string TMCAgent::GetNextGuess()
             }
             else if (last->result[i] == Colour::BLACK)
             {
-                //filter out any words which DO have this letter
-                for (WordSet::iterator iter = m_word_set.begin(); iter != m_word_set.end(); )
-                {
-                    size_t found = (*iter).find(last->guess[i]);
+                if (last->letters.find(last->guess[i])->second != Colour::GREEN) {
+                    //filter out any words which DO have this letter, if it's not already marked as green
 
-                    if (found == std::string::npos)
+                    for (WordSet::iterator iter = m_word_set.begin(); iter != m_word_set.end(); )
                     {
-                        ++iter;
-                    }
-                    else
-                    {
-                        iter = m_word_set.erase(iter);
+                        size_t found = (*iter).find(last->guess[i]);
+
+                        if (found == std::string::npos)
+                        {
+                            ++iter;
+                        }
+                        else
+                        {
+                            iter = m_word_set.erase(iter);
+                        }
                     }
                 }
             }
+ 
         }
-
+        // debugging
+        //std::cout << "m_word_set size = " << m_word_set.size() << std::endl;
 
         //TODO choose best word from remaining
         // return a random item from our remaining word set
@@ -88,6 +92,6 @@ std::string TMCAgent::GetNextGuess()
     else
     {
         //first guess
-        return std::string("SEARS");
+        return std::string("SOARE");
     }
 }
